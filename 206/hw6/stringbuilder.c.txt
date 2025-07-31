@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+char * point = NULL;
+int cap = 0;
+int size = 0;
+
+//initializes the stringbuilder
+void sb_init(int capacity){
+        point =(char *) malloc(capacity * sizeof(char));
+        size = 0;
+        cap = capacity;
+}
+//helper for string copying - don't use strcpy - use in sb_append
+void string_copy(char * out, char * in){
+        int i = 0;
+        while(in[i] != '\0'){
+                out[i] = in[i];
+                i++;
+        }
+}
+
+//appends elements to the stringbuilder
+void sb_append(char const *buf, int len){
+        int start = size;
+        int i = 0;
+        while(buf[i]!= '\0' && i<len){
+                if (size >= cap){
+                        int newCap = cap*2;
+                        char * new = (char *) malloc(newCap * sizeof(char));
+                        string_copy(new, point);
+
+                        free(point);
+                        point = new;
+                        size= size+len;
+                        cap=newCap;
+                }
+
+                point[start] = buf[i];
+                start++;
+                size++;
+                i++;
+        }
+        point[start] = '\0';
+
+}
+
+
+//gets the contents of stringbuilder as a malloc'ed null terminated string
+char * sb_build(){
+        char * new = (char *) malloc((size + 1)* sizeof(char));
+        string_copy(new,point);
+        new[size] = '\0';
+        return new;
+}
+
+//releases memory held by the stringbuilder : aka uses free on the malloc'd data
+void sb_destroy(){
+        free(point);
+        cap=0;
+        size=0;
+}
+
+
+
+int main(){
+        sb_init(8);
+        sb_append("cutie", 5);
+        sb_append("kind", 4);
+        sb_append("mine", 4);
+        char * string = sb_build();
+        printf("%s\n", string);
+        sb_destroy();
+
+        sb_init(8);
+        sb_append("my", 2);
+        sb_append("cool", 4);
+        sb_append("slay", 4);
+        sb_append("rad", 3);
+        char * next = sb_build();
+        printf("%s\n", next);
+        sb_destroy();
+
+        printf("%s\n",string);
+        printf("%s\n",next);
+
+        free(string);
+        free(next);
+        return 0;
+
+
+}

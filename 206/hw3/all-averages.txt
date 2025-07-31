@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+# in a file called `all-averages` write a (short) bash script that produces this output
+# by using a pipeline + a while loop that runs your script with `./analyze average COUNTRY`.
+
+
+CITIES="worldcities.csv"
+
+cut -d',' -f4 "$CITIES" | sort | uniq | while read -r line; do
+        echo "$line $(./analyze average "$line")"
+done
+exit 0

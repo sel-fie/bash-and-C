@@ -1,0 +1,72 @@
+#!/bin/bash
+
+
+#- `./analyze unique-ips` prints how many unique IP addresses accessed the site
+#- `./analyze reqs-per-day` prints how many requests per day are made on average
+#- `./analyze most-popular-post` determines which of the posts is the most popular. To decide this,
+#  count the number of `GET /posts/...` requests that give a 200 status code.#- `./analyze total-transferred` computes the total volume of data, in bytes, that was sent by the
+#  server, by summing the amounts given after the status codes.
+
+# 66.249.70.33 - - [18/Sep/2024:11:04:09 +0000] "GET /pdf/harpoon.pdf HTTP/1.1" 200 397342 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+# IP    timestamp       first line browser to server    status code     data in bytes   referrer        user agent
+#
+# HTTP method, path, protocol
+
+
+
+COMMAND=$1
+LOG="jerrington.me.log"
+
+unique-ips () {
+        LINES=0
+        for line in $(grep -P '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' "$LOG" | cut -d' ' -f1 | sort | uniq) ; do
+                LINES=$(( LINES + 1 ))
+        done
+        echo "$LINES"
+}
+
+reqs-per-day () {
+        #10000 requests
+        LINES=0
+        for line in $(grep -P '\[\d\d.*\]' "$LOG" | cut -d' ' -f4 | cut -d'/' -f1 | sort | uniq); do
+                LINES=$(( LINES +1 ))
+        done
+        echo "$(( 10000/LINES ))"
+}
+
+most-popular-post () {
+        #find most popular post- then outprint which one it is
+        CUT=$(grep -P 'GET\s\/posts.*200' "$LOG"| cut -d' ' -f7 | sort | uniq -c | sort -rn)
+        i=0                                                                          echo "$CUT" | while read -r line && [ 1 -gt $i ]; do
+                echo "$line" | cut -d' ' -f2                                                 i=$(( i + 1 ))                                                       done
+}
+
+total-transferred () {
+        BYTES=0
+        for line in $(cut -d'"' -f3 "$LOG" | cut -d' ' -f3)  ; do
+                BYTES=$(( BYTES + line ))
+        done
+        echo "$BYTES"
+}
+
+if [ $# != 1 ] ; then
+        echo "please use an argument: unique-ips, reqs-per-day, most-popular-post, total-transferred"
+fi
+
+
+if [ "$COMMAND" = "unique-ips" ] ; then
+        unique-ips
+        exit 0
+elif [ "$COMMAND" = "reqs-per-day" ] ; then
+        reqs-per-day
+        exit 0
+elif [ "$COMMAND" = "most-popular-post" ] ; then
+        most-popular-post
+        exit 0
+elif [ "$COMMAND" = "total-transferred" ] ; then
+        total-transferred
+        exit 0
+else
+        echo "something's wrong with your inputted argument"
+        exit 1
+fi

@@ -1,0 +1,69 @@
+#!/bin/bash
+
+#inputs for it()
+# A high-level name for this test case.
+# The expected exit code of this test case.
+# The expected stdout of this test case.
+# The expected stderr of this test case.
+# The inputs to minicalc that should produce that output.
+
+it(){ #this is the just of the it statement, need to add more to complete it1
+        name="$1"
+        ex_exit="$2"
+        ex_stdout="$3"
+        ex_stderr="$4"
+        inputs=${@:5}
+        act_stdout=$(./minicalc $inputs 2>/dev/null )
+        output=$(./minicalc $inputs 2>&1)
+        act_exit=$?
+        act_stderr=$(echo "$output" | grep "error:") #$( ./minicalc $inputs 1>/dev/null 2>&1 )
+
+        if [ "$ex_exit" -eq "$act_exit" ] && [ "$ex_stdout" == "$act_stdout" ] && [ "$ex_stderr" == "$act_stderr" ] ; then
+                echo "$name: OK"
+        else
+                echo "$name: FAILED"
+                if [ "$ex_exit" -ne "$act_exit" ] ; then
+                        echo "expected exit: $ex_exit"
+                        echo "actual exit: $act_exit"  #this is where you put the exit code??
+                fi
+                if [ "$ex_stdout" != "$act_stdout" ]; then
+                        echo "expected stdout: $ex_stdout"
+                        echo "actual stdout: $act_stdout"
+                fi
+                if [ "$ex_stderr" != "$act_stderr" ]; then
+                        echo "expected stderr: $ex_stderr"
+                        echo "actual stderr: $act_stderr"
+                fi
+        fi
+}
+
+it "gives an error message when nothing is inputted" 1 "" "error: no arguments inputted" ""
+
+it "gives an error message when gcd receives no inputs" 2 "" "error: not the right number of operands, 1 or more operand required" "gcd"
+
+it "gives an error message when sqrt receives no inputs" 2 "" "error: not the right number of operands, only 1" "sqrt"                                  
+it "gives an error message when anagram receives no inputs" 2 "" "error: not the right number of operands, only 2" "anagram"
+                                                                            it "gives an error message when sqrt is given a negative number" 3 "" "error: parsing or validation failed, either not a full floating point or negative" "sqrt" "-3"
+
+it "gives an error message when sqrt is given a non number" 3 "" "error: parsing or validation failed, either not a full floating point or negative" "sqrt" "my"
+
+it "gives an error message when anagram is given one word" 2 "" "error: not the right number of operands, only 2" "anagram" "my"
+
+it "gives an error message when anagram is given more than two words" 2 "" "error: not the right number of operands, only 2" "anagram" "my" "my" "my"
+
+it "gives an error message when anagram is given numbers" 3 "" "error: strings are not lowercase english letters" "anagram" "1" "2"                     
+it "gives an error message when gcd is given a non number" 3 "" "error: parsing or validation failed, not proper integers or negative values" "gcd" "my"                                                                            it "gives an error message when gcd is given a negative number" 3 "" "error: parsing or validation failed, not proper integers or negative values" "gcd" "-1"
+
+it "correctly asseses if two words are anagrams(true)" 0 "true " "" "anagram" "my" "ym"
+
+it "correctly asseses if two words are anagrams(false)" 0 "false " "" "anagram" "bofie" "sofie"
+
+it "correctly finds the gcd of a single" 0 "42" "" "gcd" "42"
+                                                                            it "correctly finds the gcd for two numbers" 0 "1" "" "gcd" "1" "2"
+
+it "correctly finds the gcd for three numbers" 0 "1" "" "gcd" "1" "2" "3"
+
+it "correctly finds the gcd for 4 numbers" 0 "2" "" "gcd" "2" "4" "6" "8"
+
+it "correctly finds the sqrt of an integer" 0 "this is your square root: 3.00" "" "sqrt" "9"
+                                                                            it "correctly finds the sqrt of a double" 0 "this is your square root: 2.74" "" "sqrt" "7.5"

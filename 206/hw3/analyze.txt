@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# `./analyze count COUNTRY` -- counts the cities in COUNTRY
+# `./analyze total COUNTRY` -- sums the population counts of each city in COUNTRY
+# `./analyze average COUNTRY` -- computes the average population of the citites in COUNTRY
+# worldcities.csv
+# city,lat,lng,country,iso2,iso3,capital,population
+
+FUNCTION=$1
+COUNTRY=$2
+PARAM=$#
+CITIES="worldcities.csv"
+AVERAGE=0
+COUNT=0
+
+
+#input validation
+if [ "$FUNCTION" != "count" ] && [ "$FUNCTION" != "total" ] && [ "$FUNCTION" != "average" ] ; then
+        echo 'error, please give a valid argument "count", "total", or "average"'
+        exit 1
+fi
+
+if [ "$PARAM" != 2 ] ; then
+        echo 'error, please give a valid argument count,total, or average, and a valid country'
+        exit 1
+fi
+
+#cuts just the population for the required country - after cutting the first time, the rows change
+rows-for () {
+        cut -d',' -f4- "$CITIES" | grep -w "$COUNTRY" | cut -d',' -f5
+}
+
+#loops through rows-for and adds sum together- use process substitution instead of piping, piping creates a subshell and then SUM doesnt update
+sum () {
+        SUM=0
+        while read -r LINE ; do
+                SUM=$((SUM + LINE))
+        done < <(rows-for)
+        echo $SUM
+}
+
+count () {
+        cut -d',' -f4- "$CITIES" | grep -c -w "$COUNTRY"
+}
+
+
+total () {
+        SUM=$(sum)
+        echo "$SUM"
+
+}
+
+average () {
+        countval=$(count)
+        totalval=$(total)
+        #edge case!!
+        if [ $countval -eq 0 ] ; then
+              echo '0'
+              exit 1
+        fi
+        averageval=$((totalval/countval))
+        echo $averageval
+
+}
+
+#function calls
+if [ "$FUNCTION" == "count" ] ; then
+        count
+        exit 0
+elif [ "$FUNCTION" == "total" ] ; then
+        total
+        exit 0
+elif [ "$FUNCTION" == "average" ] ; then
+        average
+        exit 0
+fi
+
+                                 

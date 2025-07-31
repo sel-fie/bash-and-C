@@ -1,0 +1,39 @@
+VAR=1
+PARAM=$#
+#gitclone HW to $HOME/fall2024-comp206/assignments/
+#if HW is already therem then do nothing
+
+if [ $HW == "-h" ] ; then
+        echo "to use this script, run get-assignment __ <-- where this is the hw file you want, e.g 'hw2'"
+        exit 0
+fi
+
+if  ! [ $PARAM -eq $VAR ] ; then
+        echo "wrong number of arguments!! why don't you try get-assignment -h"
+        exit 0
+fi
+
+
+if [ -d ~/fall2024-comp206/assignments/$HW ] ; then #if it already exists
+        read -r -p "do you want to delete the old directory [Y/N]" answer
+        if [ "$answer" == "Y" ] ; then
+                #first delete old file, then
+                rm -r -f ~/fall2024-comp206/assignments/$HW
+
+        elif [ "$answer" == "N" ] ; then
+                exit 0
+
+        else
+                echo "not a valid answer"
+                exit 1
+        fi
+
+fi
+#git clone --> record output into temp file
+
+touch ~/fall2024-comp206/assignments/error
+if ! (git clone https://gitlab.cs.mcgill.ca/jerrin/f24comp206-"$HW" &> ~/fall2024-comp206/assignments/error) ; then
+        cat ~/fall2024-comp206/assignments/error
+fi
+mv f24comp206-"$HW" "$HW"
+rm ~/fall2024-comp206/assignments/error

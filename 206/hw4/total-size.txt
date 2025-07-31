@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# `./total-size WHERE NAME`
+
+# The script should call `./search WHERE NAME` to produce a list of matching files, get the size of
+# each of those files, and sum the sizes.
+# `./total-size` should print a single number that is the total size of all the matched files. You can get the size of a single file, in bytes,
+# using `wc -c FILE`.
+
+WHERE=$1
+NAME=$2
+
+while read -r line ; do
+        num="$(wc -c < "$line")"
+        TOTAL=$(( TOTAL + num ))
+done <<< "$(./search "$WHERE" "$NAME")"
+
+echo "$TOTAL"

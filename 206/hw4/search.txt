@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# `./search WHERE NAME` recursively searches the directory tree starting at `WHERE` and prints the
+# paths to _all_ the files (not directories) found whose name is `NAME`
+
+# The output should match the output of `find WHERE -name NAME -type f` except possibly for the order
+# of the files.
+
+WHERE=$1
+NAME=$2
+
+searches () {
+        local start=$1
+        local name=$2
+for file in $start/* ; do
+        if [ -f "$file" ] && [[ "$file" = */"$name" ]] ; then
+                echo "$file"
+        elif [ -d "$file" ] ; then
+                searches "$file" "$name"
+
+        fi
+done
+
+}
+if [ ! -d $WHERE ] ; then
+        echo "error"
+        exit 1
+fi
+searches "$WHERE" "$NAME"
+exit 0

@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+double parser (char const * input) { //parses the input into doubles for square root function
+        double num;
+        char *ptr;
+        num = strtod(input, &ptr);
+        if ((*ptr != '\0') || ((num) < 0 )) {
+                return (-1);
+        }
+        return num;
+}
+double squareRoot (char const * str) { //finds the square root of input
+        double num = parser(str);
+        if (num == -1){
+                return (-1);
+        }
+        else{
+                double root = sqrt(num);
+                return root;
+        }
+}
+
+long gcd_helper(long a, long b){ // calculates the gcd between two longs
+        if (a == 0)
+                return b;
+        return gcd_helper(b % a, a);
+}
+
+int gcd_many(int len, long arr[]){ //computes the gcd of all longs given in an array of size length
+        long first = arr[0];
+        for(int i = 1; i<len; i++){
+                first = gcd_helper(first, arr[i]);
+        }
+        if (first == 1){
+                return 1;
+        }
+        return first;
+        }
+int argument_counter(char * list[]){ //counts how many arguments were inputted for gcd
+        int size = 0;
+        while(list[size] != NULL){
+                size++;
+        }
+        return size;
+}
+long gcd_parser(char const * first){ //parses the arguments into longs
+        char *ptr;
+        long num = strtol(first, &ptr, 10);
+        if ((*ptr != '\0') || (num< 0 )) {
+                return (-1);
+        }
+        return num;
+
+}
+
+int gcd (char * list[]) { //uses recursion and euclid's algorithm to find the gcd of the two integers
+        int size = argument_counter(list)-2;
+        long arr[size];
+       for(int i = 0; i < size; i++){
+                arr[i] = gcd_parser(list[i+2]);
+                if (arr[i] == -1){
+                        return (-3);
+                }
+        }
+        return gcd_many(size, arr);
+}
+
+
+void letter_frequency(char const *word, int array[26]){ //determines letter frequency and returns array with letter frequencies
+        int i = 0;
+        while(word[i] != '\0'){
+                array[word[i]-'a']++;
+                i++;
+        }
+}
+
+int ana_valid(char const *word){ //validates whether the letters in the words for anagram are lowercase letters
+        int num = strlen(word);
+        for (int i = 0; i< num; i++){
+                if (!islower(word[i])){
+                        return 1;
+                }
+        }
+        return 0;
+}
+
+int anagram (char const *first, char const *second) { //determines whether two strings are anagrams of each other
+        if((ana_valid(first) != 0) || (ana_valid(second) != 0)){
+                return 3;
+        }
+        int array_one[26] = { 0 };
+        int array_two[26] = { 0 };
+
+        letter_frequency(first, array_one);
+        letter_frequency(second, array_two);
+
+        for(int i=0; i<26; i++){
+                if( array_one[i] != array_two[i])
+                        return 1;
+        }
+
+        return 0;
+}
+
+int main (int argc, char * argv[]) { //runs the different functions are returns error codes and success codes
+        if(argc == 1){                                                                                                                                                      
+		fprintf(stderr, "no arguments inputted\n");
+                return 1;                                                                                                                                           
+	}
+        if(strcmp(argv[1], "sqrt") == 0){
+                if(argc == 3){
+                        double num = squareRoot(argv[2]);
+                        if(num == -1){
+                                fprintf(stderr,"parsing or validation failed, either not a full floating point or negative\n");
+                                return 3;                                                                                                                                           
+			}                                                                                                                                                           
+			printf("this is your square root: ");                                                                                                                       
+			printf("%.2f\n" , num);                                                                                                                                     
+			return 0;                                                                                                                                         
+		}                                                                                                                                                           			else{                                                                                                                                                         
+		fprintf(stderr, "not the right number of operands, only 1\n");
+		return 2;                                                                                     
+		}                                                                                                                                                   
+	}                                                                                                                                                           
+	else if (strcmp(argv[1], "gcd") == 0 {                                                                                                                              
+		if(argc >= 3){                                                                                                                                                      
+			int value = gcd(argv);                                                                                                                                      
+			if (value == -3){                                                                                                                                                   
+				fprintf(stderr, "parsing or validation failed, not proper integers or negative values\n");
+                                return 3;
+                        }
+                        printf("%d\n", value);
+                        return 0;
+                }
+                else{
+                        fprintf(stderr , "not the right number of operands, 1 or more operand required\n");
+                        return 2;
+                }
+        }
+        else if (strcmp(argv[1],"anagram")== 0){
+               if(argc == 4){
+                       int answer = anagram(argv[2], argv[3]);
+                       if(answer==1){
+                                printf("false \n");
+                                return 0;
+                        }
+                       else if (answer ==0){
+                                printf("true \n");
+                                return 0;
+                       }
+                       else if (answer == 3){
+                                fprintf(stderr , "strings are not lowercase english letters\n");
+                                return 3;
+                       }
+                }
+                else{
+                        fprintf(stderr, "not the right number of operands, only 2\n");
+                        return 2;                                                                                                                                          
+		}
+        }
+else{                                                                                                                                                               
+	fprintf(stderr, "not a valid operation inputted\n");                                                                                                          
+	return 1;                                                                                                                                           
+}                    
+
+ 

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ -d "$HOME/fall2024-comp206/backups" ]; #checks if the backups directory exists
+then
+
+        echo 'this directory already exists'
+        #why no exit code
+
+else
+
+        mkdir $HOME/fall2024-comp206/backups
+        #makes the directory
+fi
+
+cd $HOME/fall2024-comp206/
+#changes the directory if you weren't already there
+
+DATE="$(date +%Y-%m-%dT%T)"
+#sets the proper date
+
+tar -czf backups/assignments-"$DATE".tar.gz $HOME/fall2024-comp206/assignments/
+#creates the archive in backups
+echo "Created backup: backups/assignments-"$DATE".tar.gz"

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+
+# Compile `minicalc.c` into an executable named `minicalc`.
+# Use the `-Wall` flag to enable useful compiler warnings about your C program.
+#  Use the `-lm` flag to include the math library, which will be necessary for one of the operations
+# Only when compilation succeeds: run `minicalc` many times across a variety of inputs to test it.
+#  Add to this test suite in tandem with the development of minicalc itself.
+
+
+gcc -Wall -o minicalc minicalc.c -lm
+
+
+#write test suite for mini calc
+
+if [ $? -eq 0 ]; then
+        ./minicalc  #no arguments
+
+        echo -e '\n'
+        ./minicalc sqrt #operation no argument
+        ./minicalc anagram
+        ./minicalc gcd
+        echo -e '\n'
+
+        ./minicalc sqrt -3 #incorrect input
+        ./minicalc sqrt my
+        echo -e '\n'
+        #incorrect input
+        ./minicalc anagram my
+        ./minicalc anagram my my my
+        ./minicalc anagram 1 2
+        ./minicalc anagram 1
+        echo -e '\n'
+
+        ./minicalc gcd my #incorrect input
+        ./minicalc gcd -25
+        echo -e '\n'
+        ./minicalc anagram my ym #correct input
+        ./minicalc anagram sofie bofie
+        ./minicalc gcd 1
+ 	./minicalc gcd 2 4
+        ./minicalc gcd 1 2 3
+        ./minicalc gcd 2 4 6 8
+        ./minicalc sqrt 3
+        exit 0
+else
+        echo "did not compile correctly"
+        exit 1
+
+fi
